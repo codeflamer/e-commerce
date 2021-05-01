@@ -5,6 +5,9 @@ import { commerce } from './components/lib/commerce';
 import Navbar from './components/Navbar/Navbar';
 import Products from './components/Products/Products';
 import {BrowserRouter as Router,Route,Switch} from 'react-router-dom';
+import Checkout from './components/Checkout/Checkout';
+
+
 
 
 const App = () => {
@@ -60,6 +63,9 @@ const App = () => {
                       handleEmptyCart={handleEmptyCart}
                     />
                 </Route>  
+                <Route exact path='/checkout'>
+                    <Checkout/>
+                </Route>
               </Switch>
       </div>
     </Router>
