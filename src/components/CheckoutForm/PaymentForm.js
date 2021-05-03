@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-const PaymentForm = () => {
+const PaymentForm = ({shippingData}) => {
     return (
         <div>
             PaymentForm

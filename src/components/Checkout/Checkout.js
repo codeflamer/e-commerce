@@ -1,16 +1,18 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import {Paper,Stepper,Step,StepLabel,Typography,CircularProgress,Divider,Button} from '@material-ui/core';
 import useStyles from './styles';
 import AddressForm from '../CheckoutForm/AddressForm';
 import PaymentForm from '../CheckoutForm/PaymentForm';
-
+import {commerce} from '../lib/commerce';
 
 const steps = ['Shipping address','Payment details']
 
-const Checkout = () => {
+const Checkout = ({cart}) => {
 
     const [activeStep,setActiveStep] = useState(0);
+    const [checkoutToken,setCheckoutToken]  = useState(null);
     const classes = useStyles();
+    const [shippingData,setShipppingData] = useState({});
 
     const Confirmation =()=> (
         <div>
@@ -18,7 +20,31 @@ const Checkout = () => {
         </div>
     )
 
-    const Form =()=> activeStep ===0 ? <AddressForm/>:<PaymentForm/>
+    const nextStep =()=>{
+        setActiveStep((prevState)=>prevState + 1);
+    }
+
+    const backStep=()=>{
+        setActiveStep((prevState)=> prevState -1);
+    }
+
+    const next =(data)=>{
+        setShipppingData(data);
+        console.log(data);
+        nextStep();
+    }
+
+    useEffect(()=>{
+        const generateToken = async()=>{
+                // console.log(cart);
+                const token = await commerce.checkout.generateToken(cart.id,{type:'cart'});
+                // console.log(token);
+                setCheckoutToken(token);        
+        }
+        generateToken();
+    },[cart])
+
+    const Form =()=> activeStep ===0 ? <AddressForm checkoutToken={checkoutToken} next={next}/>:<PaymentForm shippingData={shippingData}/>
 
     return (
         <>
@@ -34,7 +60,7 @@ const Checkout = () => {
                         })}
                     </Stepper>
                     
-                    {activeStep === steps.length ? <Confirmation/>:<Form/>}
+                    {activeStep === steps.length ? <Confirmation/>: checkoutToken && <Form/>}
                 </Paper>
             </main>   
        </>
